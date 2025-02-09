@@ -47,27 +47,10 @@ You'll need a couple of API keys to get the full experience:
 - Sync with Google Calendar
 - Get reminders and notifications
 
-## 🤝 Want to Help?
-
-Contributions are what make the open source community amazing! Any contributions you make are **greatly appreciated**.
-
-1. Fork it
-2. Create your feature branch (`git checkout -b feature/CoolFeature`)
-3. Commit your changes (`git commit -m 'Add some cool feature'`)
-4. Push to the branch (`git push origin feature/CoolFeature`)
-5. Open a Pull Request
 
 ## 📝 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
-## 🙋‍♂️ Contact
-
-Got questions? Reach out!
-
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
-
-Project Link: [https://github.com/your-username/event-planner](https://github.com/your-username/event-planner)
 
 ---
 
