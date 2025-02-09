@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Planner</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Event Planner</h1>
+        <nav>
+            <ul>
+                <li><a href="#event-details">Event Details</a></li>
+                <li><a href="#attendees">Attendees</a></li>
+                <li><a href="#venues">Venues</a></li>
+                <li><a href="#schedule">Schedule</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="event-details">
+            <h2>Event Details</h2>
+            <form id="event-form">
+                <div class="form-group">
+                    <label for="event-name">Event Name:</label>
+                    <input type="text" id="event-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-date">Date:</label>
+                    <input type="date" id="event-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-description">Description:</label>
+                    <textarea id="event-description"></textarea>
+                </div>
+            </form>
+        </section>
+
+        <section id="attendees">
+            <h2>Attendees</h2>
+            <div class="attendee-controls">
+                <button id="add-attendee" class="add-attendee-btn">
+                    <i class="fas fa-plus"></i>Add Attendee
+                </button>
+                <select id="group-filter">
+                    <option value="all">All Groups</option>
+                    <option value="family">Family</option>
+                    <option value="friends">Friends</option>
+                    <option value="colleagues">Colleagues</option>
+                </select>
+            </div>
+            <ul id="attendee-list"></ul>
+        </section>
+
+        <section id="venues">
+            <h2>Venue Search</h2>
+            <div class="search-controls">
+                <input type="text" id="location-search" placeholder="Enter location">
+                <select id="rating-filter">
+                    <option value="">Any Rating</option>
+                    <option value="4">4+ Stars</option>
+                    <option value="3">3+ Stars</option>
+                    <option value="2">2+ Stars</option>
+                </select>
+                <select id="distance-filter">
+                    <option value="">Any Distance</option>
+                    <option value="1000">1 km</option>
+                    <option value="5000">5 km</option>
+                    <option value="10000">10 km</option>
+                    <option value="20000">20 km</option>
+                </select>
+                <select id="venue-type">
+                    <option value="4bf58dd8d48988d171941735">Event Space</option>
+                    <option value="4bf58dd8d48988d1e5931735">Conference Room</option>
+                    <option value="4bf58dd8d48988d1ff931735">Hotel</option>
+                    <option value="4d4b7105d754a06374d81259">Restaurant</option>
+                </select>
+                <button id="search-venues">Search</button>
+            </div>
+            <div id="venue-results"></div>
+        </section>
+
+        <section id="schedule">
+            <h2>Schedule</h2>
+            <div class="schedule-section">
+                <button id="add-schedule-item" class="button">
+                    <i class="fas fa-plus"></i>
+                    Add Schedule Item
+                </button>
+                <ul id="schedule-list" class="schedule-list"></ul>
+            </div>
+            <button id="sync-calendar">Sync with Google Calendar</button>
+        </section>
+    </main>
+
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Add Schedule Item</h3>
+            <form id="schedule-form">
+                <div class="form-group">
+                    <label for="schedule-time">Time:</label>
+                    <input type="time" id="schedule-time" required>
+                </div>
+                <div class="form-group">
+                    <label for="schedule-description">Description:</label>
+                    <textarea id="schedule-description" required></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit">Save</button>
+                    <button type="button" class="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-schedule-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Edit Schedule Item</h3>
+            <form id="edit-schedule-form">
+                <div class="form-group">
+                    <label for="edit-schedule-time">Time:</label>
+                    <input type="time" id="edit-schedule-time" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-schedule-description">Description:</label>
+                    <textarea id="edit-schedule-description" required></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit">Update</button>
+                    <button type="button" class="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toaster-container" class="toaster-container"></div>
+
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add New Attendee</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label for="attendee-name">Attendee Name:</label>
+                    <input type="text" id="attendee-name" placeholder="Enter name">
+                </div>
+                <div class="form-group">
+                    <label for="attendee-group">Group:</label>
+                    <select id="attendee-group">
+                        <option value="family">Family</option>
+                        <option value="friends">Friends</option>
+                        <option value="colleagues">Colleagues</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button id="cancel-attendee" class="button secondary">Cancel</button>
+                    <button id="save-attendee" class="button primary">Add Attendee</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/attendees.js"></script>
+    <script src="js/venues.js"></script>
+    <script src="js/schedule.js"></script>
+    <script src="js/toaster.js"></script>
+</body>
+</html> 
