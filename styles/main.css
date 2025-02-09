@@ -12,7 +12,7 @@
     --background: #FFFFFF;
     --surface: #F5F7FA;
     --surface-light: #FFFFFF;
-    --text: #2C3E50;
+    --text: #333;
     --text-secondary: #6C7A89;
     --shadow: 0 4px 20px rgba(33, 150, 243, 0.1);
     --gradient: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -27,6 +27,9 @@
     --surface-dark: #e0e0e0;
     --error: #f44336;
     --error-dark: #d32f2f;
+    --danger: #e74c3c;
+    --text-light: #666;
+    --border: #ddd;
 }
 
 body {
@@ -784,26 +787,32 @@ select:disabled {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
+    background: rgba(0, 0, 0, 0.5);
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(5px);
-}
-
-.modal-overlay.active {
-    display: flex !important;
+    z-index: 1000;
+    padding: 1rem;
 }
 
 .modal {
-    background-color: white;
+    background: white;
     border-radius: 12px;
     width: 90%;
     max-width: 500px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    animation: modalSlideIn 0.3s ease-out;
-    z-index: 10000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: relative;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .modal-header {
@@ -848,17 +857,6 @@ select:disabled {
     justify-content: flex-end;
     gap: 1rem;
     padding-top: 1rem;
-}
-
-@keyframes modalSlideIn {
-    from {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
 }
 
 .add-attendee-btn {
@@ -1045,5 +1043,185 @@ input[type="date"] {
     .form-row {
         flex-direction: column;
         gap: 0;
+    }
+}
+
+/* Attendee Styles */
+.attendees-section {
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.attendee-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.attendee-item {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border);
+}
+
+.attendee-item:hover {
+    transform: translateX(5px);
+    border-color: var(--primary);
+}
+
+.attendee-name {
+    font-weight: 500;
+    color: var(--text);
+}
+
+.attendee-group {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 0.3rem 0.8rem;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    margin: 0 1rem;
+}
+
+.delete-attendee {
+    background: transparent;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.delete-attendee:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--text);
+}
+
+.close-modal {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-light);
+}
+
+.modal-content {
+    padding: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.button {
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.button.primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
+
+.button.secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.button.primary:hover {
+    background: var(--primary-dark);
+}
+
+.button.secondary:hover {
+    background: var(--surface);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .modal {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .attendee-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .attendee-group {
+        margin: 0.5rem 0;
     }
 } 

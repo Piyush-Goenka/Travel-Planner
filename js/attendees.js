@@ -2,146 +2,64 @@ class AttendeeManager {
     constructor() {
         this.attendeeList = document.getElementById('attendee-list');
         this.addButton = document.getElementById('add-attendee');
-        this.groupFilter = document.getElementById('group-filter');
         
-        // Modal elements
-        this.modalOverlay = document.getElementById('modal-overlay');
-        this.closeModalBtn = document.querySelector('.close-modal');
-        this.cancelBtn = document.getElementById('cancel-attendee');
-        this.saveBtn = document.getElementById('save-attendee');
-        this.nameInput = document.getElementById('attendee-name');
-        this.groupSelect = document.getElementById('attendee-group');
-
-        // Debug log
-        console.log('Modal elements:', {
-            overlay: this.modalOverlay,
-            closeBtn: this.closeModalBtn,
-            cancelBtn: this.cancelBtn,
-            saveBtn: this.saveBtn,
-            nameInput: this.nameInput,
-            groupSelect: this.groupSelect
-        });
-
         // Initialize toaster
         this.toaster = new ToasterManager();
         
-        // Add event listener to add button
+        // Add event listeners
         if (this.addButton) {
-            this.addButton.addEventListener('click', () => this.showModal());
+            this.addButton.addEventListener('click', () => this.addAttendee());
         }
         
         // Load saved attendees
         this.loadAttendees();
     }
 
-    setupEventListeners() {
-        this.closeModalBtn.addEventListener('click', () => this.hideModal());
-        this.cancelBtn.addEventListener('click', () => this.hideModal());
-        this.saveBtn.addEventListener('click', () => this.handleAddAttendee());
-        this.groupFilter.addEventListener('change', () => this.filterAttendees());
-        
-        // Close modal when clicking outside
-        this.modalOverlay.addEventListener('click', (e) => {
-            if (e.target === this.modalOverlay) {
-                this.hideModal();
-            }
-        });
-
-        // Handle Enter key in name input
-        this.nameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.handleAddAttendee();
-            }
-        });
-    }
-
-    showModal() {
-        const modal = document.getElementById('modal-overlay');
-        const closeBtn = modal.querySelector('.close-modal');
-        const cancelBtn = document.getElementById('cancel-attendee');
-        const saveBtn = document.getElementById('save-attendee');
-        const nameInput = document.getElementById('attendee-name');
-
-        // Clear previous input
-        nameInput.value = '';
-
-        // Show modal
-        modal.style.display = 'flex';
-
-        // Handle close button
-        closeBtn.onclick = () => {
-            modal.style.display = 'none';
-        };
-
-        // Handle cancel button
-        cancelBtn.onclick = () => {
-            modal.style.display = 'none';
-        };
-
-        // Handle save button
-        saveBtn.onclick = () => {
-            const name = nameInput.value.trim();
-            const group = document.getElementById('attendee-group').value;
-            
-            if (name) {
-                const attendee = {
-                    id: Date.now().toString(),
-                    name,
-                    group
-                };
-                
+    loadAttendees() {
+        const savedAttendees = localStorage.getItem('attendees');
+        if (savedAttendees) {
+            const attendees = JSON.parse(savedAttendees);
+            attendees.forEach(attendee => {
                 const li = this.createAttendeeElement(attendee);
                 this.attendeeList.appendChild(li);
-                this.saveAttendees();
-                this.toaster.success(`${name} added to attendees`);
-                modal.style.display = 'none';
-            } else {
-                this.toaster.error('Please enter an attendee name');
-            }
-        };
-
-        // Close modal if clicking outside
-        modal.onclick = (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
-
-        // Focus on name input
-        nameInput.focus();
+            });
+        }
     }
 
-    hideModal() {
-        this.modalOverlay.classList.remove('active');
-        this.nameInput.value = '';
-    }
-
-    handleAddAttendee() {
-        const name = this.nameInput.value.trim();
-        const group = this.groupSelect.value;
-
-        if (name) {
-            const attendee = { name, group };
+    addAttendee() {
+        const name = prompt('Enter attendee name:');
+        if (name?.trim()) {
+            const group = prompt('Enter group (family, friends, colleagues, other):', 'friends');
+            const validGroups = ['family', 'friends', 'colleagues', 'other'];
+            const validatedGroup = validGroups.includes(group?.toLowerCase()) ? group.toLowerCase() : 'other';
+            
+            const attendee = {
+                id: Date.now().toString(),
+                name: name.trim(),
+                group: validatedGroup
+            };
+            
             const li = this.createAttendeeElement(attendee);
             this.attendeeList.appendChild(li);
             this.saveAttendees();
-            this.hideModal();
             this.toaster.success(`${name} added to attendees`);
-        } else {
-            this.toaster.error('Please enter an attendee name');
+        } else if (name !== null) { // Only show error if user didn't cancel
+            this.toaster.error('Please enter a valid name');
         }
     }
 
     createAttendeeElement(attendee) {
         const li = document.createElement('li');
         li.className = 'attendee-item';
-        li.dataset.id = attendee.id || Date.now().toString();
+        li.dataset.id = attendee.id;
         li.dataset.group = attendee.group;
 
         li.innerHTML = `
-            <span class="attendee-name">${attendee.name}</span>
-            <span class="attendee-group">${attendee.group}</span>
-            <button class="delete-attendee">
+            <div class="attendee-info">
+                <span class="attendee-name">${this.escapeHtml(attendee.name)}</span>
+                <span class="attendee-group">${this.escapeHtml(attendee.group)}</span>
+            </div>
+            <button class="delete-attendee" aria-label="Delete attendee">
                 <i class="fas fa-times"></i>
             </button>
         `;
@@ -149,33 +67,14 @@ class AttendeeManager {
         // Add delete functionality
         const deleteBtn = li.querySelector('.delete-attendee');
         deleteBtn.addEventListener('click', () => {
-            li.remove();
-            this.saveAttendees();
-            this.toaster.success(`${attendee.name} removed from attendees`);
+            if (confirm(`Are you sure you want to remove ${attendee.name}?`)) {
+                li.remove();
+                this.saveAttendees();
+                this.toaster.success(`${attendee.name} removed from attendees`);
+            }
         });
 
         return li;
-    }
-
-    removeAttendee(id) {
-        const element = this.attendeeList.querySelector(`[data-id="${id}"]`);
-        if (element) {
-            element.remove();
-            this.saveAttendees();
-        }
-    }
-
-    filterAttendees() {
-        const group = this.groupFilter.value;
-        const attendees = this.attendeeList.getElementsByTagName('li');
-        
-        for (const attendee of attendees) {
-            if (group === 'all' || attendee.dataset.group === group) {
-                attendee.style.display = '';
-            } else {
-                attendee.style.display = 'none';
-            }
-        }
     }
 
     saveAttendees() {
@@ -194,15 +93,13 @@ class AttendeeManager {
         localStorage.setItem('attendees', JSON.stringify(attendees));
     }
 
-    loadAttendees() {
-        const savedAttendees = localStorage.getItem('attendees');
-        if (savedAttendees) {
-            const attendees = JSON.parse(savedAttendees);
-            attendees.forEach(attendee => {
-                const li = this.createAttendeeElement(attendee);
-                this.attendeeList.appendChild(li);
-            });
-        }
+    escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 }
 

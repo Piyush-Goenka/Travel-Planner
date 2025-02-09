@@ -43,18 +43,13 @@
 
         <section id="attendees">
             <h2>Attendees</h2>
-            <div class="attendee-controls">
-                <button id="add-attendee" class="add-attendee-btn">
-                    <i class="fas fa-plus"></i>Add Attendee
+            <div class="attendees-section">
+                <button id="add-attendee" class="button">
+                    <i class="fas fa-plus"></i>
+                    Add Attendee
                 </button>
-                <select id="group-filter">
-                    <option value="all">All Groups</option>
-                    <option value="family">Family</option>
-                    <option value="friends">Friends</option>
-                    <option value="colleagues">Colleagues</option>
-                </select>
+                <ul id="attendee-list" class="attendee-list"></ul>
             </div>
-            <ul id="attendee-list"></ul>
         </section>
 
         <section id="venues">
@@ -141,33 +136,6 @@
     </div>
 
     <div id="toaster-container" class="toaster-container"></div>
-
-    <div id="modal-overlay" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Add New Attendee</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-content">
-                <div class="form-group">
-                    <label for="attendee-name">Attendee Name:</label>
-                    <input type="text" id="attendee-name" placeholder="Enter name">
-                </div>
-                <div class="form-group">
-                    <label for="attendee-group">Group:</label>
-                    <select id="attendee-group">
-                        <option value="family">Family</option>
-                        <option value="friends">Friends</option>
-                        <option value="colleagues">Colleagues</option>
-                    </select>
-                </div>
-                <div class="modal-actions">
-                    <button id="cancel-attendee" class="button secondary">Cancel</button>
-                    <button id="save-attendee" class="button primary">Add Attendee</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="js/config.js"></script>
     <script src="js/main.js"></script>
