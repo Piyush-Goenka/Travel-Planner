@@ -134,14 +134,26 @@ class AttendeeManager {
 
     createAttendeeElement(attendee) {
         const li = document.createElement('li');
-        li.dataset.id = attendee.id;
-        li.dataset.group = attendee.group;
         li.className = 'attendee-item';
+        li.dataset.id = attendee.id || Date.now().toString();
+        li.dataset.group = attendee.group;
+
         li.innerHTML = `
             <span class="attendee-name">${attendee.name}</span>
-            <span class="attendee-group">(${attendee.group})</span>
-            <button class="remove-attendee" onclick="attendeeManager.removeAttendee(${attendee.id})">Remove</button>
+            <span class="attendee-group">${attendee.group}</span>
+            <button class="delete-attendee">
+                <i class="fas fa-times"></i>
+            </button>
         `;
+
+        // Add delete functionality
+        const deleteBtn = li.querySelector('.delete-attendee');
+        deleteBtn.addEventListener('click', () => {
+            li.remove();
+            this.saveAttendees();
+            this.toaster.success(`${attendee.name} removed from attendees`);
+        });
+
         return li;
     }
 
@@ -183,9 +195,9 @@ class AttendeeManager {
     }
 
     loadAttendees() {
-        const saved = localStorage.getItem('attendees');
-        if (saved) {
-            const attendees = JSON.parse(saved);
+        const savedAttendees = localStorage.getItem('attendees');
+        if (savedAttendees) {
+            const attendees = JSON.parse(savedAttendees);
             attendees.forEach(attendee => {
                 const li = this.createAttendeeElement(attendee);
                 this.attendeeList.appendChild(li);
@@ -194,4 +206,7 @@ class AttendeeManager {
     }
 }
 
-const attendeeManager = new AttendeeManager(); 
+// Initialize the AttendeeManager when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new AttendeeManager();
+}); 
