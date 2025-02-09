@@ -49,18 +49,59 @@ class AttendeeManager {
     }
 
     showModal() {
-        console.log('Showing modal');
-        if (!this.modalOverlay) {
-            console.error('Modal overlay not found!');
-            return;
-        }
-        this.modalOverlay.classList.add('active');
-        if (this.nameInput) {
-            this.nameInput.value = '';
-            this.nameInput.focus();
-        } else {
-            console.error('Name input not found!');
-        }
+        const modal = document.getElementById('modal-overlay');
+        const closeBtn = modal.querySelector('.close-modal');
+        const cancelBtn = document.getElementById('cancel-attendee');
+        const saveBtn = document.getElementById('save-attendee');
+        const nameInput = document.getElementById('attendee-name');
+
+        // Clear previous input
+        nameInput.value = '';
+
+        // Show modal
+        modal.style.display = 'flex';
+
+        // Handle close button
+        closeBtn.onclick = () => {
+            modal.style.display = 'none';
+        };
+
+        // Handle cancel button
+        cancelBtn.onclick = () => {
+            modal.style.display = 'none';
+        };
+
+        // Handle save button
+        saveBtn.onclick = () => {
+            const name = nameInput.value.trim();
+            const group = document.getElementById('attendee-group').value;
+            
+            if (name) {
+                const attendee = {
+                    id: Date.now().toString(),
+                    name,
+                    group
+                };
+                
+                const li = this.createAttendeeElement(attendee);
+                this.attendeeList.appendChild(li);
+                this.saveAttendees();
+                toaster.success(`${name} added to attendees`);
+                modal.style.display = 'none';
+            } else {
+                toaster.error('Please enter an attendee name');
+            }
+        };
+
+        // Close modal if clicking outside
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Focus on name input
+        nameInput.focus();
     }
 
     hideModal() {
@@ -146,17 +187,8 @@ class AttendeeManager {
     }
 
     addAttendee() {
-        const name = prompt('Enter attendee name:');
-        if (name) {
-            const attendee = {
-                name,
-                group: 'friends' // Default group
-            };
-            const li = this.createAttendeeElement(attendee);
-            this.attendeeList.appendChild(li);
-            this.saveAttendees();
-            showToast(`${name} added to attendees`);
-        }
+        // Show the modal instead of using prompt
+        this.showModal();
     }
 }
 
