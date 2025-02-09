@@ -22,12 +22,19 @@ class AttendeeManager {
             groupSelect: this.groupSelect
         });
 
-        this.setupEventListeners();
+        // Initialize toaster
+        this.toaster = new ToasterManager();
+        
+        // Add event listener to add button
+        if (this.addButton) {
+            this.addButton.addEventListener('click', () => this.showModal());
+        }
+        
+        // Load saved attendees
         this.loadAttendees();
     }
 
     setupEventListeners() {
-        this.addButton.addEventListener('click', () => this.addAttendee());
         this.closeModalBtn.addEventListener('click', () => this.hideModal());
         this.cancelBtn.addEventListener('click', () => this.hideModal());
         this.saveBtn.addEventListener('click', () => this.handleAddAttendee());
@@ -86,10 +93,10 @@ class AttendeeManager {
                 const li = this.createAttendeeElement(attendee);
                 this.attendeeList.appendChild(li);
                 this.saveAttendees();
-                toaster.success(`${name} added to attendees`);
+                this.toaster.success(`${name} added to attendees`);
                 modal.style.display = 'none';
             } else {
-                toaster.error('Please enter an attendee name');
+                this.toaster.error('Please enter an attendee name');
             }
         };
 
@@ -119,9 +126,9 @@ class AttendeeManager {
             this.attendeeList.appendChild(li);
             this.saveAttendees();
             this.hideModal();
-            showToast(`${name} added to attendees`);
+            this.toaster.success(`${name} added to attendees`);
         } else {
-            showToast('Please enter an attendee name', 'error');
+            this.toaster.error('Please enter an attendee name');
         }
     }
 
@@ -184,11 +191,6 @@ class AttendeeManager {
                 this.attendeeList.appendChild(li);
             });
         }
-    }
-
-    addAttendee() {
-        // Show the modal instead of using prompt
-        this.showModal();
     }
 }
 
