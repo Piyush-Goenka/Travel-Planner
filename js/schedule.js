@@ -1,17 +1,21 @@
 class ScheduleManager {
     constructor() {
         this.timeline = document.getElementById('timeline');
+        if (!this.timeline) {
+            console.error('Timeline element not found');
+        }
+        
         this.syncButton = document.getElementById('sync-calendar');
         this.scheduleList = document.getElementById('schedule-list');
         this.addButton = document.getElementById('add-schedule-item');
         
         // Initialize event listeners
-        this.syncButton.addEventListener('click', () => this.syncWithGoogleCalendar());
-        this.addButton.addEventListener('click', () => this.addScheduleItem());
+        this.syncButton?.addEventListener('click', () => this.syncWithGoogleCalendar());
+        this.addButton?.addEventListener('click', () => this.addScheduleItem());
         
-        // Load schedule immediately (not waiting for DOM content loaded)
+        // Load schedule immediately
         this.loadSchedule();
-
+        
         // Initialize modals
         this.initializeModals();
     }
@@ -326,11 +330,20 @@ class ScheduleManager {
                 return;
             }
 
-            // Get schedule items
-            const scheduleItems = Array.from(this.timeline.querySelectorAll('.timeline-item')).map(item => ({
-                time: item.querySelector('time').textContent,
-                description: item.querySelector('.timeline-text').textContent
-            }));
+            // Get schedule items - check if timeline exists
+            let scheduleItems = [];
+            if (this.timeline) {
+                scheduleItems = Array.from(this.timeline.querySelectorAll('.timeline-item')).map(item => ({
+                    time: item.querySelector('time').textContent,
+                    description: item.querySelector('.timeline-text').textContent
+                }));
+            } else {
+                // Fallback to scheduleList if timeline doesn't exist
+                scheduleItems = Array.from(this.scheduleList?.children || []).map(item => ({
+                    time: item.querySelector('.time').textContent,
+                    description: item.querySelector('.activity').textContent
+                }));
+            }
 
             // Create description with schedule
             const scheduleDescription = scheduleItems.map(item => 
