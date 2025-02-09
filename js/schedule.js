@@ -51,11 +51,16 @@ class ScheduleManager {
 
     loadSchedule() {
         const items = JSON.parse(localStorage.getItem('scheduleItems') || '[]');
-        items.forEach(item => {
-            const li = this.createScheduleElement(item);
-            this.scheduleList.appendChild(li);
-        });
-        this.initializeDragAndDrop();
+        if (this.scheduleList) {
+            items.forEach(item => {
+                const li = this.createScheduleElement(item);
+                this.scheduleList.appendChild(li);
+            });
+        }
+        // Only initialize drag and drop if timeline exists
+        if (this.timeline) {
+            this.initializeDragAndDrop();
+        }
     }
 
     createDefaultSchedule() {
@@ -243,6 +248,8 @@ class ScheduleManager {
     }
 
     initializeDragAndDrop() {
+        if (!this.timeline) return;  // Exit if timeline doesn't exist
+        
         const items = this.timeline.querySelectorAll('.timeline-item');
         items.forEach(item => {
             item.addEventListener('dragstart', this.handleDragStart.bind(this));
